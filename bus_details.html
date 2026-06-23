@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Seats | RedBus Clone{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="bus-header-card">
+        <div class="operator-info">
+            <h2>{{ route['operator'] }}</h2>
+            <p>{{ route['type'] }} {{ route['layout'] }} | {{ route['source'] }} to {{ route['destination'] }}</p>
+            <p><i class="fa-regular fa-calendar"></i> {{ route['date'] }}</p>
+        </div>
+        <div class="time-info text-right">
+            <h3>{{ route['departure_time'] }} - {{ route['arrival_time'] }}</h3>
+            <p>₹{{ route['price_per_seat'] }} per seat</p>
+        </div>
+    </div>
+
+    <div class="seat-selection-container">
+        <!-- Seat Layout -->
+        <div class="seat-layout-area">
+            <h3>Select Seats</h3>
+            <div class="seat-legend">
+                <span class="legend-item"><div class="seat available"></div> Available</span>
+                <span class="legend-item"><div class="seat booked"></div> Booked</span>
+                <span class="legend-item"><div class="seat selected"></div> Selected</span>
+            </div>
+
+            <div class="bus-layout">
+                <div class="steering-wheel"><i class="fa-solid fa-dharmachakra"></i></div>
+                <div class="seats-grid {{ 'layout-sleeper' if route['layout'] == 'Sleeper' else 'layout-seater' }}">
+                    {% for i in range(1, route['total_seats'] + 1) %}
+                        {% set seat_id = 'S' ~ i %}
+                        <div class="seat {{ 'booked' if seat_id in booked_seats else 'available' }}" 
+                             data-seat="{{ seat_id }}"
+                             {% if seat_id in booked_seats %} title="Booked" {% endif %}>
+                             {{ seat_id }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Summary -->
+        <div class="booking-summary-area">
+            <div class="summary-card">
+                <h3>Booking Details</h3>
+                <form action="{{ url_for('book', route_id=route['route_id']) }}" method="POST" id="bookingForm">
+                    <div class="selected-seats-info">
+                        <p>Selected Seats: <span id="selectedSeatsDisplay">None</span></p>
+                    </div>
+                    
+                    <div class="price-calc">
+                        <div class="calc-row">
+                            <span>Base Fare</span>
+                            <span id="baseFareDisplay">₹0</span>
+                        </div>
+                        <div class="calc-row total">
+                            <span>Total Amount</span>
+                            <span id="totalFareDisplay">₹0</span>
+                        </div>
+                    </div>
+
+                    <!-- Hidden inputs for seats -->
+                    <div id="hiddenSeatInputs"></div>
+
+                    <button type="submit" class="btn btn-primary btn-block" id="proceedBtn" disabled>
+                        Proceed to Book
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const seats = document.querySelectorAll('.seat.available');
+        const selectedSeatsDisplay = document.getElementById('selectedSeatsDisplay');
+        const baseFareDisplay = document.getElementById('baseFareDisplay');
+        const totalFareDisplay = document.getElementById('totalFareDisplay');
+        const hiddenSeatInputs = document.getElementById('hiddenSeatInputs');
+        const proceedBtn = document.getElementById('proceedBtn');
+        
+        const pricePerSeat = {{ route['price_per_seat'] }};
+        let selectedSeats = [];
+
+        seats.forEach(seat => {
+            seat.addEventListener('click', () => {
+                const seatId = seat.dataset.seat;
+                
+                if (seat.classList.contains('selected')) {
+                    seat.classList.remove('selected');
+                    selectedSeats = selectedSeats.filter(s => s !== seatId);
+                } else {
+                    if (selectedSeats.length >= 6) {
+                        alert("You can only select up to 6 seats at a time.");
+                        return;
+                    }
+                    seat.classList.add('selected');
+                    selectedSeats.push(seatId);
+                }
+                
+                updateSummary();
+            });
+        });
+
+        function updateSummary() {
+            if (selectedSeats.length > 0) {
+                selectedSeatsDisplay.textContent = selectedSeats.join(', ');
+                const total = selectedSeats.length * pricePerSeat;
+                baseFareDisplay.textContent = `₹${total}`;
+                totalFareDisplay.textContent = `₹${total}`;
+                proceedBtn.disabled = false;
+            } else {
+                selectedSeatsDisplay.textContent = 'None';
+                baseFareDisplay.textContent = `₹0`;
+                totalFareDisplay.textContent = `₹0`;
+                proceedBtn.disabled = true;
+            }
+
+            // Update hidden inputs
+            hiddenSeatInputs.innerHTML = '';
+            selectedSeats.forEach(seat => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'seats[]';
+                input.value = seat;
+                hiddenSeatInputs.appendChild(input);
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results | RedBus Clone{% endblock %}
+
+{% block content %}
+<div class="container section-padding search-results-page">
+    <div class="search-header">
+        <h2>{{ source }} <i class="fa-solid fa-arrow-right"></i> {{ destination }}</h2>
+        <p>{{ date }}</p>
+    </div>
+
+    <div class="results-layout">
+        <!-- Sidebar Filters -->
+        <aside class="filters-sidebar">
+            <h3>Filters</h3>
+            
+            <div class="filter-group">
+                <h4>Bus Type</h4>
+                <label class="checkbox-container">AC
+                    <input type="checkbox" class="filter-checkbox" data-filter="type" value="AC">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">Non-AC
+                    <input type="checkbox" class="filter-checkbox" data-filter="type" value="Non-AC">
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            
+            <div class="filter-group">
+                <h4>Seat Type</h4>
+                <label class="checkbox-container">Sleeper
+                    <input type="checkbox" class="filter-checkbox" data-filter="layout" value="Sleeper">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">Seater
+                    <input type="checkbox" class="filter-checkbox" data-filter="layout" value="Seater">
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+        </aside>
+
+        <!-- Bus List -->
+        <div class="bus-list">
+            {% if results %}
+                {% for bus in results %}
+                <div class="bus-card" data-type="{{ bus['type'] }}" data-layout="{{ bus['layout'] }}">
+                    <div class="bus-main-info">
+                        <div class="operator-info">
+                            <h3>{{ bus['operator'] }}</h3>
+                            <p class="bus-type">{{ bus['type'] }} {{ bus['layout'] }}</p>
+                        </div>
+                        <div class="time-info">
+                            <div class="time">
+                                <strong>{{ bus['departure_time'] }}</strong>
+                                <span>{{ source }}</span>
+                            </div>
+                            <div class="duration">
+                                <i class="fa-solid fa-arrow-right-long"></i>
+                            </div>
+                            <div class="time">
+                                <strong>{{ bus['arrival_time'] }}</strong>
+                                <span>{{ destination }}</span>
+                            </div>
+                        </div>
+                        <div class="price-info">
+                            <div class="rating"><i class="fa-solid fa-star"></i> {{ bus['ratings'] }}</div>
+                            <div class="price">₹{{ bus['price_per_seat'] }}</div>
+                        </div>
+                    </div>
+                    <div class="bus-actions">
+                        <span class="seats-left">{{ bus['total_seats'] }} Seats available</span>
+                        <a href="{{ url_for('bus_details', route_id=bus['route_id']) }}" class="btn btn-primary">View Seats</a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-results text-center">
+                    <img src="https://illustrations.popsy.co/amber/shrug.svg" alt="No Buses" width="200">
+                    <h3>No buses found for this route.</h3>
+                    <p>Try changing your search criteria.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkboxes = document.querySelectorAll('.filter-checkbox');
+        const busCards = document.querySelectorAll('.bus-card');
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', filterBuses);
+        });
+
+        function filterBuses() {
+            const activeFilters = {
+                type: [],
+                layout: []
+            };
+
+            checkboxes.forEach(cb => {
+                if(cb.checked) {
+                    activeFilters[cb.dataset.filter].push(cb.value);
+                }
+            });
+
+            busCards.forEach(card => {
+                const typeMatch = activeFilters.type.length === 0 || activeFilters.type.includes(card.dataset.type);
+                const layoutMatch = activeFilters.layout.length === 0 || activeFilters.layout.includes(card.dataset.layout);
+
+                if(typeMatch && layoutMatch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

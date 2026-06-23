@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | RedBus Clone{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container hero-content">
+        <h1 class="hero-title">India's No. 1 Online Bus Ticket Booking Site</h1>
+        
+        <!-- Search Form -->
+        <div class="search-container">
+            <form action="{{ url_for('search') }}" method="GET" class="search-form" id="searchForm">
+                <div class="form-group input-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" name="source" id="source" placeholder="From" required list="sourceList" autocomplete="off">
+                    <datalist id="sourceList">
+                        {% for src in sources %}
+                            <option value="{{ src['source'] }}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+                
+                <div class="form-icon-swap" id="swapBtn">
+                    <i class="fa-solid fa-right-left"></i>
+                </div>
+                
+                <div class="form-group input-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" name="destination" id="destination" placeholder="To" required list="destList" autocomplete="off">
+                    <datalist id="destList">
+                        {% for dst in destinations %}
+                            <option value="{{ dst['destination'] }}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+                
+                <div class="form-group input-icon">
+                    <i class="fa-regular fa-calendar"></i>
+                    <input type="date" name="date" id="date" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary search-btn">Search Buses</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Offers Section -->
+<section class="offers section-padding">
+    <div class="container">
+        <h2 class="section-title text-center">Trending Offers</h2>
+        <div class="offers-grid">
+            <div class="offer-card">
+                <div class="offer-icon"><i class="fa-solid fa-percent"></i></div>
+                <div class="offer-info">
+                    <h3>Save up to Rs 250 on bus tickets</h3>
+                    <p>Valid till 30th Jun</p>
+                    <span class="offer-code">FIRST</span>
+                </div>
+            </div>
+            <div class="offer-card">
+                <div class="offer-icon"><i class="fa-solid fa-wallet"></i></div>
+                <div class="offer-info">
+                    <h3>Get 20% cashback using Wallet</h3>
+                    <p>Valid till 15th Jul</p>
+                    <span class="offer-code">CB20</span>
+                </div>
+            </div>
+            <div class="offer-card">
+                <div class="offer-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="offer-info">
+                    <h3>Flat Rs 100 off on AC Buses</h3>
+                    <p>Limited period offer</p>
+                    <span class="offer-code">AC100</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Routes -->
+<section class="popular-routes section-padding bg-light">
+    <div class="container">
+        <h2 class="section-title text-center">Popular Routes</h2>
+        <div class="routes-grid">
+            <a href="{{ url_for('search', source='Mumbai', destination='Pune', date='') }}" class="route-card">
+                <div class="route-img" style="background-image: url('https://images.unsplash.com/photo-1570168007204-dfb528c6958f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                <div class="route-details">
+                    <h3>Mumbai to Pune</h3>
+                    <p>From ₹400</p>
+                </div>
+            </a>
+            <a href="{{ url_for('search', source='Delhi', destination='Jaipur', date='') }}" class="route-card">
+                <div class="route-img" style="background-image: url('https://images.unsplash.com/photo-1599661559902-6e2101341a9d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                <div class="route-details">
+                    <h3>Delhi to Jaipur</h3>
+                    <p>From ₹600</p>
+                </div>
+            </a>
+            <a href="{{ url_for('search', source='Bangalore', destination='Chennai', date='') }}" class="route-card">
+                <div class="route-img" style="background-image: url('https://images.unsplash.com/photo-1582510003544-4d00b7f7415e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60');"></div>
+                <div class="route-details">
+                    <h3>Bangalore to Chennai</h3>
+                    <p>From ₹800</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set min date for date picker to today
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+        dateInput.value = today;
+
+        // Swap functionality
+        document.getElementById('swapBtn').addEventListener('click', () => {
+            const src = document.getElementById('source');
+            const dest = document.getElementById('destination');
+            const temp = src.value;
+            src.value = dest.value;
+            dest.value = temp;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Buses | Admin | RedBus Clone{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="admin-header mb-4">
+        <h2>Manage Buses</h2>
+    </div>
+
+    <!-- Admin Nav -->
+    <div class="admin-nav mb-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Dashboard</a>
+        <a href="{{ url_for('admin_buses') }}" class="btn btn-primary">Manage Buses</a>
+        <a href="{{ url_for('admin_routes') }}" class="btn btn-outline">Manage Routes</a>
+    </div>
+
+    <div class="admin-layout">
+        <div class="admin-form-section">
+            <div class="card">
+                <h3>Add New Bus</h3>
+                <form action="{{ url_for('admin_buses') }}" method="POST">
+                    <div class="form-group">
+                        <label>Bus Name</label>
+                        <input type="text" name="name" required placeholder="e.g. Volvo 9400">
+                    </div>
+                    <div class="form-group">
+                        <label>Bus Number</label>
+                        <input type="text" name="number" required placeholder="e.g. MH-12-AB-1234">
+                    </div>
+                    <div class="form-group">
+                        <label>Operator</label>
+                        <input type="text" name="operator" required placeholder="e.g. VRL Travels">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select name="type" required>
+                                <option value="AC">AC</option>
+                                <option value="Non-AC">Non-AC</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Layout</label>
+                            <select name="layout" required>
+                                <option value="Sleeper">Sleeper</option>
+                                <option value="Seater">Seater</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Total Seats</label>
+                            <input type="number" name="total_seats" required value="40">
+                        </div>
+                        <div class="form-group">
+                            <label>Price per Seat (₹)</label>
+                            <input type="number" name="price_per_seat" required value="1000">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Add Bus</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="admin-list-section">
+            <div class="card">
+                <h3>All Buses</h3>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Operator</th>
+                                <th>Number</th>
+                                <th>Type</th>
+                                <th>Seats</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bus in buses %}
+                            <tr>
+                                <td>{{ bus['id'] }}</td>
+                                <td>{{ bus['operator'] }}</td>
+                                <td>{{ bus['number'] }}</td>
+                                <td>{{ bus['type'] }} {{ bus['layout'] }}</td>
+                                <td>{{ bus['total_seats'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Passenger Details | RedBus Clone{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="passenger-details-container">
+        <div class="passenger-form-area">
+            <h2>Passenger Details</h2>
+            <p>Please enter details for all selected seats.</p>
+            
+            <form action="{{ url_for('process_passenger_details') }}" method="POST" class="passenger-form">
+                {% for seat in seats %}
+                <div class="passenger-card">
+                    <h4>Seat: {{ seat }}</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" name="name_{{ loop.index0 }}" required placeholder="Passenger Name">
+                        </div>
+                        <div class="form-group small">
+                            <label>Age</label>
+                            <input type="number" name="age_{{ loop.index0 }}" required min="1" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select name="gender_{{ loop.index0 }}" required>
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="contact-card">
+                    <h3>Contact Details</h3>
+                    <p>Your ticket will be sent to these details.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" value="{{ current_user['email'] }}" readonly class="readonly-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" value="{{ current_user['phone'] }}" readonly class="readonly-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Continue to Payment</button>
+            </form>
+        </div>
+        
+        <div class="booking-summary-area">
+            <div class="summary-card">
+                <h3>Journey Summary</h3>
+                <div class="journey-info">
+                    <p><strong>{{ route['operator'] }}</strong></p>
+                    <p>{{ route['source'] }} to {{ route['destination'] }}</p>
+                    <p>{{ route['date'] }} | {{ route['departure_time'] }}</p>
+                </div>
+                
+                <div class="price-calc mt-3">
+                    <div class="calc-row">
+                        <span>Seats</span>
+                        <span>{{ seats | join(', ') }}</span>
+                    </div>
+                    <div class="calc-row total">
+                        <span>Total Amount</span>
+                        <span>₹{{ total_price }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
