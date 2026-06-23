@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}E-Ticket | RedBus Clone{% endblock %}
+
+{% block head %}
+<style>
+    /* Print styles specifically for ticket */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .ticket-wrapper, .ticket-wrapper * {
+            visibility: visible;
+        }
+        .ticket-wrapper {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="ticket-actions text-right mb-3 no-print">
+        <button onclick="window.print()" class="btn btn-primary"><i class="fa-solid fa-print"></i> Print Ticket</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Back to Dashboard</a>
+    </div>
+
+    <div class="ticket-wrapper">
+        <div class="ticket-header">
+            <div class="ticket-logo">
+                <i class="fa-solid fa-bus"></i>
+                Red<span>Bus</span>
+            </div>
+            <div class="ticket-status {{ 'text-danger' if booking['status'] == 'cancelled' else 'text-success' }}">
+                {{ booking['status'] | upper }}
+            </div>
+        </div>
+        
+        <div class="ticket-body">
+            <div class="ticket-row top-row">
+                <div class="t-col">
+                    <p class="t-label">PNR/Booking ID</p>
+                    <h3>#{{ booking['id'] }}</h3>
+                </div>
+                <div class="t-col">
+                    <p class="t-label">Operator</p>
+                    <h3>{{ booking['bus_name'] }} ({{ booking['operator'] }})</h3>
+                </div>
+                <div class="t-col">
+                    <p class="t-label">Bus Number</p>
+                    <h3>{{ booking['bus_number'] }}</h3>
+                </div>
+            </div>
+
+            <div class="ticket-divider"></div>
+
+            <div class="ticket-row journey-row">
+                <div class="t-col">
+                    <p class="t-label">From</p>
+                    <h2>{{ booking['source'] }}</h2>
+                    <p>{{ booking['departure_time'] }}</p>
+                    <p>{{ booking['date'] }}</p>
+                </div>
+                <div class="t-col text-center">
+                    <div class="journey-arrow">
+                        <i class="fa-solid fa-arrow-right-long"></i>
+                    </div>
+                </div>
+                <div class="t-col text-right">
+                    <p class="t-label">To</p>
+                    <h2>{{ booking['destination'] }}</h2>
+                    <p>{{ booking['arrival_time'] }}</p>
+                    <p>{{ booking['date'] }}</p> <!-- Simplified to same date -->
+                </div>
+            </div>
+
+            <div class="ticket-divider"></div>
+
+            <div class="ticket-section">
+                <h4 class="mb-3">Passenger Details</h4>
+                <table class="ticket-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Seat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in passengers %}
+                        <tr>
+                            <td>{{ p['name'] }}</td>
+                            <td>{{ p['age'] }}</td>
+                            <td>{{ p['gender'] }}</td>
+                            <td><strong>{{ p['seat_number'] }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="ticket-divider"></div>
+
+            <div class="ticket-row payment-row">
+                <div class="t-col">
+                    <p class="t-label">Payment ID</p>
+                    <p>{{ payment['transaction_id'] }}</p>
+                </div>
+                <div class="t-col text-right">
+                    <p class="t-label">Total Amount Paid</p>
+                    <h2>₹{{ booking['total_price'] }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ticket-footer text-center">
+            <p>Please carry a valid ID proof along with this e-ticket.</p>
+            <p>For any queries, contact our 24x7 support.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

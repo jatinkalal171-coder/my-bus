@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Routes | Admin | RedBus Clone{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="admin-header mb-4">
+        <h2>Manage Routes</h2>
+    </div>
+
+    <!-- Admin Nav -->
+    <div class="admin-nav mb-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Dashboard</a>
+        <a href="{{ url_for('admin_buses') }}" class="btn btn-outline">Manage Buses</a>
+        <a href="{{ url_for('admin_routes') }}" class="btn btn-primary">Manage Routes</a>
+    </div>
+
+    <div class="admin-layout">
+        <div class="admin-form-section">
+            <div class="card">
+                <h3>Add New Route</h3>
+                <form action="{{ url_for('admin_routes') }}" method="POST">
+                    <div class="form-group">
+                        <label>Select Bus</label>
+                        <select name="bus_id" required>
+                            <option value="">Select a Bus</option>
+                            {% for bus in buses %}
+                            <option value="{{ bus['id'] }}">{{ bus['name'] }} ({{ bus['number'] }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Source</label>
+                            <input type="text" name="source" required placeholder="e.g. Mumbai">
+                        </div>
+                        <div class="form-group">
+                            <label>Destination</label>
+                            <input type="text" name="destination" required placeholder="e.g. Pune">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Departure Time</label>
+                            <input type="time" name="departure_time" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Arrival Time</label>
+                            <input type="time" name="arrival_time" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" name="date" required id="routeDate">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Add Route</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="admin-list-section">
+            <div class="card">
+                <h3>All Routes</h3>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Bus</th>
+                                <th>Route</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for route in routes %}
+                            <tr>
+                                <td>{{ route['bus_name'] }}</td>
+                                <td>{{ route['source'] }} <i class="fa-solid fa-arrow-right"></i> {{ route['destination'] }}</td>
+                                <td>{{ route['date'] }}</td>
+                                <td>{{ route['departure_time'] }} - {{ route['arrival_time'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('routeDate');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    });
+</script>
+{% endblock %}

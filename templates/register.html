@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Register | RedBus Clone{% endblock %}
+
+{% block content %}
+<section class="auth-section section-padding">
+    <div class="container auth-container">
+        <div class="auth-card">
+            <div class="auth-header text-center">
+                <h2>Create an Account</h2>
+                <p>Join us to book your tickets easily.</p>
+            </div>
+            
+            <form action="{{ url_for('register') }}" method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <div class="input-icon">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="name" id="name" required placeholder="Enter your full name">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-icon">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" name="email" id="email" required placeholder="Enter your email">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <div class="input-icon">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="tel" name="phone" id="phone" required placeholder="Enter your phone number">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-icon">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" name="password" id="password" required placeholder="Create a password" minlength="6">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+            
+            <div class="auth-footer text-center">
+                <p>Already have an account? <a href="{{ url_for('login') }}">Log in here</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

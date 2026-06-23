@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard | RedBus Clone{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="admin-header mb-4">
+        <h2>Admin Dashboard</h2>
+        <p>Manage buses, routes, and view platform statistics.</p>
+    </div>
+
+    <!-- Admin Nav -->
+    <div class="admin-nav mb-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary">Dashboard</a>
+        <a href="{{ url_for('admin_buses') }}" class="btn btn-outline">Manage Buses</a>
+        <a href="{{ url_for('admin_routes') }}" class="btn btn-outline">Manage Routes</a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid mb-5">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats['total_users'] }}</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-bus"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats['total_buses'] }}</h3>
+                <p>Total Buses</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-route"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats['total_routes'] }}</h3>
+                <p>Total Routes</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-ticket"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats['total_bookings'] }}</h3>
+                <p>Total Bookings</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="admin-section">
+        <h3>Recent Bookings</h3>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in recent_bookings %}
+                    <tr>
+                        <td>#{{ b['id'] }}</td>
+                        <td>{{ b['user_name'] }}</td>
+                        <td>₹{{ b['total_price'] }}</td>
+                        <td>{{ b['booking_date'] }}</td>
+                        <td><span class="status-badge status-{{ b['status'] }}">{{ b['status'] }}</span></td>
+                        <td><a href="{{ url_for('ticket', booking_id=b['id']) }}" class="btn btn-sm btn-outline">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

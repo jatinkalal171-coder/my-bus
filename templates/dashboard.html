@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | RedBus Clone{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="dashboard-header text-center mb-4">
+        <h2>My Dashboard</h2>
+        <p>Welcome back, {{ user['name'] }}!</p>
+    </div>
+
+    <div class="dashboard-layout">
+        <!-- Profile Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+                <h3>{{ user['name'] }}</h3>
+                <p>{{ user['email'] }}</p>
+                <p>{{ user['phone'] }}</p>
+                <button class="btn btn-outline btn-block mt-3">Edit Profile</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <h3>Booking History</h3>
+            
+            {% if bookings %}
+                <div class="bookings-list">
+                    {% for b in bookings %}
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <span class="booking-id">Booking ID: #{{ b['booking_id'] }}</span>
+                            <span class="booking-status status-{{ b['status'] }}">{{ b['status'] | capitalize }}</span>
+                        </div>
+                        <div class="booking-body">
+                            <div class="journey-info">
+                                <h4>{{ b['operator'] }}</h4>
+                                <p>{{ b['source'] }} <i class="fa-solid fa-arrow-right"></i> {{ b['destination'] }}</p>
+                                <p><i class="fa-regular fa-calendar"></i> {{ b['journey_date'] }}</p>
+                            </div>
+                            <div class="price-info text-right">
+                                <h3>₹{{ b['total_price'] }}</h3>
+                                <p>Booked on {{ b['booking_date'].split(' ')[0] if b['booking_date'] else '' }}</p>
+                            </div>
+                        </div>
+                        <div class="booking-footer">
+                            <a href="{{ url_for('ticket', booking_id=b['booking_id']) }}" class="btn btn-outline btn-sm">View Ticket</a>
+                            
+                            {% if b['status'] == 'confirmed' %}
+                            <form action="{{ url_for('cancel_booking', booking_id=b['booking_id']) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel Booking</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-bookings text-center">
+                    <div class="empty-icon"><i class="fa-solid fa-ticket-simple"></i></div>
+                    <h4>No bookings found</h4>
+                    <p>Looks like you haven't booked any trips yet.</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">Book Now</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
